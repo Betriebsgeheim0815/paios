@@ -1,0 +1,32 @@
+PAIOS – Lizenz (Dokumentation & Standard)
+
+Die Dokumentation und der Standard dieses Repositorys sind lizenziert unter
+der Creative-Commons-Lizenz **Attribution-ShareAlike 4.0 International
+(CC BY-SA 4.0)**.
+
+Gilt für (nicht abschließend):
+- `README.md`, `MANIFEST.md`, `STATUS.md`, `CONTRIBUTING.md`, `PUBLISH-GITHUB.md`
+- alle Dateien in `spec/`, `reference-vault/` und `mcp/` (Dokumentationsinhalte)
+
+Nicht davon erfasst: die Software/Skripte (v. a. `tools/`) — diese stehen
+unter der MIT-Lizenz (siehe `LICENSE`).
+
+-----------------------------------------------------------------------
+
+Copyright (c) 2026 Dr. Dhoni
+
+Du darfst das Material teilen und bearbeiten, auch kommerziell, unter diesen
+Bedingungen:
+
+- Namensnennung (BY): Nenne den Urheber, verlinke die Lizenz und gib an, ob
+  Änderungen vorgenommen wurden.
+- Weitergabe unter gleichen Bedingungen (SA): Wenn du das Material bearbeitest,
+  musst du deine Beiträge unter derselben Lizenz (CC BY-SA 4.0) weitergeben.
+- Keine zusätzlichen Einschränkungen.
+
+Lizenz-Kurzfassung: https://creativecommons.org/licenses/by-sa/4.0/deed.de
+Vollständiger Lizenztext (rechtsverbindlich):
+https://creativecommons.org/licenses/by-sa/4.0/legalcode.de
+
+Die Lizenz wird hier per Verweis eingebunden; im Zweifel gilt der vollständige
+Lizenztext unter der oben genannten URL.
