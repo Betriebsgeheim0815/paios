@@ -1,5 +1,5 @@
 # paios.yaml
-version: 0.1
+version: 0.2
 created: 2026-07-13
 entities: [knowledge, project, workflow, skill, memory]
 id_scheme: "typ-jahr-laufnr (k-/p-/w-/s-/m-)"

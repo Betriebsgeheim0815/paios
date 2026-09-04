@@ -2,14 +2,14 @@
 id: doc-standard
 type: meta
 title: "PAIOS Standard"
-version: 0.1
+version: 0.2
 status: draft
 created: 2026-07-13
 owner: "Dr. Dhoni"
 links: [doc-manifest, PAIOS_Datenmodell]
 ---
 
-# PAIOS Standard v0.1 (Spezifikation)
+# PAIOS Standard v0.2 (Spezifikation)
 
 Dieser Standard spezifiziert verbindlich, wie ein PAIOS-konformer Wissensspeicher (ein „PAIOS-Vault") aufgebaut ist. Er übersetzt das Manifest in prüfbare Regeln.
 
@@ -51,6 +51,8 @@ Ein Vault MUSS folgende Top-Level-Kategorien führen (Nummernpräfix ist verbind
 
 - Jede Primärdatei MUSS aus **YAML-Frontmatter** (`---`) + **Markdown-Körper** bestehen.
 - Encoding MUSS UTF-8 sein.
+- Der portable Kern verwendet flaches Frontmatter: skalare Werte und Listen
+  im Format `[wert-1, wert-2]`.
 - Dateinamen SOLLTEN klein, ohne Sonderzeichen, mit `-` getrennt sein und die `id` widerspiegeln.
 
 ## 5. Metadaten (Frontmatter)
@@ -73,6 +75,7 @@ Ein Vault MUSS folgende Top-Level-Kategorien führen (Nummernpräfix ist verbind
 - Präfixe MUSS: `k-` knowledge, `p-` project, `w-` workflow, `s-` skill, `m-` memory.
 - `meta`/`moc`-Dokumente KÖNNEN sprechende IDs führen (z. B. `doc-standard`, `moc-paios`).
 - Eine `id` DARF NICHT wiederverwendet werden.
+- Jede `links:`-ID MUSS auf eine im selben Vault vorhandene ID verweisen.
 
 ## 7. Verknüpfungen
 
@@ -98,6 +101,9 @@ Verbindliche Minimalfelder je Typ (zusätzlich zu §5.1):
 - Lese-/Schreibzugriff auf den Vault SOLLTE über einen Filesystem-/Obsidian-MCP-Server laufen.
 - Persistentes Gedächtnis SOLLTE über einen Memory-MCP-Server erfolgen; Ergebnisse werden als `memory`-Dateien in `50_memory/` zurückgeschrieben.
 - Jede modellseitige Änderung SOLLTE per Git committet werden (Nachvollziehbarkeit).
+- Schreib- und Löschwerkzeuge MÜSSEN auf den kleinsten nötigen Vault-Pfad
+  begrenzt sein. Vor destruktiven oder umfangreichen Änderungen MUSS ein Mensch
+  den Diff bestätigen.
 
 ## 10. Konformität
 

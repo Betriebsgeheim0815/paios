@@ -3,7 +3,7 @@
 PAIOS ist ein offener Standard. Beiträge sind willkommen.
 
 ## Grundregeln
-1. **Keine Secrets** in Commits (siehe `.gitignore`).
+1. **Keine Secrets** in Commits (siehe `.gitignore` und `SECURITY.md`).
 2. Änderungen am Standard laufen über Pull Requests mit Begründung.
 3. SemVer: Breaking Changes erhöhen die Major-Version.
 4. Neue Entitäten/Felder müssen mit dem Validierungsskript geprüft werden.
@@ -11,5 +11,6 @@ PAIOS ist ein offener Standard. Beiträge sind willkommen.
 ## Vor dem PR
 ```bash
 python tools/validate_paios.py reference-vault
+python -m unittest discover -s tests -v
 ```
 Nur konforme Beiträge werden gemergt.

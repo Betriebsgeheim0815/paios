@@ -1,16 +1,18 @@
 {
   "mcpServers": {
     "paios-vault": {
-      "command": "npx",
+      "command": "cmd",
       "args": [
+        "/c",
+        "npx",
         "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "C:\\Users\\user\\OneDrive\\!! [ BACKUP-ALL ] !!\\Backup - Obsidian\\OBSIDIAN\\VAULT\\Betriebsgeheim-0815\\PAIOS"
+        "@modelcontextprotocol/server-filesystem@2026.8.31",
+        "C:\\PFAD\\ZUM\\PAIOS-VAULT"
       ]
     },
     "paios-memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-memory@2026.8.31"]
     }
   }
 }

@@ -54,7 +54,9 @@ python tools/validate_paios.py path/to/vault
 
 ## Status
 
-Frühe Phase (v0.1). Standard, Architektur und Referenzstruktur stehen; Validierung ist implementiert.
+Frühe, abgesicherte Standardphase (v0.2). Standard, Architektur,
+Referenzstruktur und Validator stehen; automatische Regressionstests prüfen
+den Referenz-Vault bei Änderungen. PAIOS ist noch keine Endnutzer-Anwendung.
 
 ## Lizenz
 

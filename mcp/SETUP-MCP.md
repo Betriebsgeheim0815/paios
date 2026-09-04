@@ -30,8 +30,11 @@ Verbindet den PAIOS-Vault (Speicherschicht) und ein persistentes Gedächtnis üb
    `paios-vault` darauf zugreifen.
 
 ## Hinweise
-- Der Pfad im Snippet zeigt bereits auf Ihren PAIOS-Ordner.
+- Die Vorlage ist absichtlich anonymisiert. Ersetze den Platzhalter nur durch
+  den konkreten PAIOS-Vault, niemals durch Home-, OneDrive- oder Backup-Ordner.
 - Der Filesystem-Server erlaubt Schreibzugriff nur innerhalb des angegebenen Ordners.
+- Paketversionen sind festgelegt; Updates zuerst in einer Vault-Kopie testen.
+- Änderungen und besonders Löschvorgänge nur nach Diff-Prüfung bestätigen.
 - Für stärkeres Memory-Ranking später: `ai-memory-mcp` als Alternative prüfen (lokal, SQLite).
 - **Keine Secrets** in den Vault – auch nicht über MCP.
 

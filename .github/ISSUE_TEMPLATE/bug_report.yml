@@ -1,0 +1,17 @@
+name: Fehler melden
+description: Reproduzierbares Problem im Standard, Validator oder Beispiel-Vault melden
+title: "[Fehler]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Was ist passiert?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduktion ohne Secrets oder private Vault-Inhalte
+    validations:
+      required: true
