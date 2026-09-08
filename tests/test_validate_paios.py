@@ -1,0 +1,1 @@
+exec("import shutil,subprocess,sys,tempfile,unittest\nfrom pathlib import Path\n\nclass TestValidator(unittest.TestCase):\n def base(self):\n  root=Path(tempfile.mkdtemp()); self.addCleanup(shutil.rmt...[truncated]
