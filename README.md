@@ -1,39 +1,41 @@
 # PAIOS – Personal AI Operating System
 
-Ein offener, modellunabhängiger Standard für Wissens- und Workflow-Arbeit mit KI.
+Ein offener, modellunabhängiger Standard für persönliche Wissens- und Workflow-Arbeit.
 
 > Dein Wissen gehört dir. Modelle sind austauschbar. Der Workflow bleibt stabil.
-
-> PAIOS ist ein Standardentwurf mit Referenz-Vault und Werkzeugen, kein fertiger Anbieter oder Desktop-Client.
 
 ## Architektur
 
 ```text
-Mensch → Modell (austauschbar) → MCP (optional) → PAIOS-Vault
+Mensch → Modell → MCP (optional) → PAIOS-Vault
 ```
 
-Der Vault besteht aus lesbarem Markdown mit YAML-Frontmatter und kann mit Git versioniert werden.
+Der Vault besteht aus Markdown mit YAML-Frontmatter und kann mit Git versioniert werden.
 
 ## Schnellstart
 
 ```sh
+python tools/paios.py validate reference-vault
+python tools/paios.py search reference-vault Beispiel
 python tools/validate_paios.py reference-vault
 python -m unittest discover -s tests -v
 ```
 
-Die MCP-Konfiguration in `mcp/claude_desktop_config.snippet.json` verwendet bewusst den Platzhalter `<PATH_TO_PAIOS_VAULT>`. Ersetze ihn lokal durch den absoluten Vault-Pfad.
+## Werkzeuge
 
-## Repository-Struktur
+- `tools/paios.py`: CLI mit `init`, `new`, `validate` und `search`.
+- `tools/paios_context.py`: kompakten Projektkontext erzeugen.
+- `tools/backfill_frontmatter.py`: kollisionssicheres Backfill mit Dry-Run.
+- `tools/import_markdown.py`: konservativer Markdown-Import.
+- `mcp/readonly_reference.py`: read-only Referenzadapter.
 
-- `spec/` – Standard, Datenmodell und Architektur
-- `reference-vault/` – minimales Beispiel
-- `tools/validate_paios.py` – strikter Konformitätsprüfer
-- `tools/backfill_frontmatter.py` – kollisionssicheres Backfill
-- `tests/` und `.github/workflows/` – reproduzierbare Prüfungen
+## Spezifikation
+
+`spec/CONFORMANCE-MATRIX.md` definiert die Konformitätslevel 1 bis 3. Die Migration von v0.1 ist in `spec/MIGRATION-v0.1-v0.2.md` beschrieben.
 
 ## Status
 
-Frühe Phase (v0.1). Die Spezifikation, Beispielstruktur, Validierung und optionale MCP-Referenzintegration sind vorhanden. Die Konformitätsregeln werden in `spec/VALIDATION.md` dokumentiert.
+Entwicklungsstand v0.2: Referenz-Vault, Validator, CLI-Grundlage, Importer, Vorlagen, read-only MCP-Adapter und CI sind vorhanden. PAIOS ist kein fertiger Anbieter-Client.
 
 ## Lizenzen
 
@@ -42,4 +44,4 @@ Frühe Phase (v0.1). Die Spezifikation, Beispielstruktur, Validierung und option
 
 ## Mitmachen
 
-Änderungen sind über Branches und Pull Requests willkommen. Siehe `CONTRIBUTING.md`.
+Änderungen bitte über Branches und Pull Requests einreichen. Siehe `CONTRIBUTING.md`.
