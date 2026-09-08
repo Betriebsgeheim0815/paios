@@ -1,64 +1,45 @@
 # PAIOS – Personal AI Operating System
 
-**Ein modellunabhängiger Wissens- und Workflow-Standard.**
-Dein Wissen gehört dir. Modelle sind austauschbar. Der Workflow bleibt stabil.
+Ein offener, modellunabhängiger Standard für Wissens- und Workflow-Arbeit mit KI.
 
-> „Das Git für KI-Wissensarbeit."
+> Dein Wissen gehört dir. Modelle sind austauschbar. Der Workflow bleibt stabil.
 
-## Was ist PAIOS?
-
-PAIOS ist **kein Programm und kein Anbieter**, sondern ein offener Standard dafür, wie ein Mensch sein Wissen, seine Projekte und Arbeitsabläufe modellunabhängig strukturiert, versioniert und über KI-Anbieter hinweg trägt.
-
-- **Format:** Markdown + YAML-Frontmatter, versioniert mit Git
-- **Speicher:** lokaler Wissensspeicher (Referenz: Obsidian-Vault)
-- **Schnittstelle:** MCP (Model Context Protocol)
-- **Modell:** austauschbar (Claude / GPT / Gemini …)
+> PAIOS ist ein Standardentwurf mit Referenz-Vault und Werkzeugen, kein fertiger Anbieter oder Desktop-Client.
 
 ## Architektur
 
-```
-Mensch → Modell (austauschbar) → MCP → PAIOS-Vault (Markdown + Git)
+```text
+Mensch → Modell (austauschbar) → MCP (optional) → PAIOS-Vault
 ```
 
-## Repo-Struktur
-
-```
-paios/
-├── README.md                 # dieses Dokument
-├── LICENSE                   # offene Lizenz (Vorschlag: CC BY-SA 4.0 / MIT für Tools)
-├── MANIFEST.md               # Warum PAIOS existiert
-├── spec/
-│   ├── STANDARD.md           # Die Spezifikation (MUSS/SOLLTE/KANN)
-│   ├── ARCHITECTURE.md       # Architekturhandbuch
-│   └── DATA-MODEL.md         # Datenmodell + Entitäten
-├── reference-vault/          # minimaler, konformer Beispiel-Vault
-│   ├── 00_meta/
-│   ├── 10_knowledge/
-│   ├── 20_projects/
-│   ├── 30_workflows/
-│   ├── 40_skills/
-│   ├── 50_memory/
-│   └── 90_archive/
-├── tools/
-│   └── validate_paios.py     # Konformitäts-Prüfer (Standard §10)
-├── .gitignore
-└── CONTRIBUTING.md
-```
+Der Vault besteht aus lesbarem Markdown mit YAML-Frontmatter und kann mit Git versioniert werden.
 
 ## Schnellstart
 
-```bash
-# Vault auf Konformität prüfen
-python tools/validate_paios.py path/to/vault
+```sh
+python tools/validate_paios.py reference-vault
+python -m unittest discover -s tests -v
 ```
+
+Die MCP-Konfiguration in `mcp/claude_desktop_config.snippet.json` verwendet bewusst den Platzhalter `<PATH_TO_PAIOS_VAULT>`. Ersetze ihn lokal durch den absoluten Vault-Pfad.
+
+## Repository-Struktur
+
+- `spec/` – Standard, Datenmodell und Architektur
+- `reference-vault/` – minimales Beispiel
+- `tools/validate_paios.py` – strikter Konformitätsprüfer
+- `tools/backfill_frontmatter.py` – kollisionssicheres Backfill
+- `tests/` und `.github/workflows/` – reproduzierbare Prüfungen
 
 ## Status
 
-Frühe Phase (v0.1). Standard, Architektur und Referenzstruktur stehen; Validierung ist implementiert.
+Frühe Phase (v0.1). Die Spezifikation, Beispielstruktur, Validierung und optionale MCP-Referenzintegration sind vorhanden. Die Konformitätsregeln werden in `spec/VALIDATION.md` dokumentiert.
 
-## Lizenz
+## Lizenzen
 
-Dual-Lizenz:
-- **Software/Tools** (v. a. `tools/`) unter **MIT** — siehe [`LICENSE`](LICENSE).
-- **Dokumentation & Standard** (README, MANIFEST, `spec/`, `reference-vault/`, `mcp/`) unter
-  **CC BY-SA 4.0** — siehe [`LICENSE-DOCS`](LICENSE-DOCS).
+- Software und Tools: MIT
+- Standard, Dokumentation und Referenz-Vault: CC BY-SA 4.0
+
+## Mitmachen
+
+Änderungen sind über Branches und Pull Requests willkommen. Siehe `CONTRIBUTING.md`.

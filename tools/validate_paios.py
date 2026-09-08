@@ -1,147 +1,69 @@
-#!/usr/bin/env python3
-"""
-PAIOS Konformitäts-Validierung (Standard v0.1, §10)
-Prüft einen PAIOS-Vault auf Level 1 / Level 2 Konformität.
-
-Nutzung:
-    python validate_paios.py <pfad-zum-vault>
-
-Keine externen Abhängigkeiten (nur Standardbibliothek).
-Exit-Code 0 = Level 1 bestanden, 1 = nicht bestanden.
-"""
-
-import sys
-import re
+import datetime as dt, re, sys
 from pathlib import Path
-
-# Robuste Ausgabe unabhängig von der Konsolen-Codepage (Windows cp1252 etc.)
-try:
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-except Exception:
-    pass
-
-REQUIRED_DIRS = ["00_meta", "10_knowledge", "20_projects", "50_memory"]
-RECOMMENDED_DIRS = ["30_workflows", "40_skills", "90_archive"]
-REQUIRED_META = ["paios.yaml", "principles.md"]
-REQUIRED_FM = ["id", "type", "title", "created"]
-VALID_TYPES = {"knowledge", "project", "workflow", "skill", "memory", "meta", "moc"}
-ID_PATTERN = re.compile(r"^[a-z]+-\d{4}-\d+$|^(doc|moc)-[a-z0-9-]+$")
-SECRET_PATTERNS = [
-    re.compile(r"sk-[A-Za-z0-9]{16,}"),
-    re.compile(r"AIza[0-9A-Za-z\-_]{20,}"),
-    re.compile(r"ghp_[A-Za-z0-9]{20,}"),
-    re.compile(r"xox[baprs]-[A-Za-z0-9-]{10,}"),
-    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
-]
-
+REQUIRED_DIRS = ['00_meta', '10_knowledge', '20_projects', '50_memory']
+RECOMMENDED_DIRS = ['30_workflows', '40_skills', '90_archive']
+REQUIRED_META = ['paios.yaml', 'principles.md']
+REQUIRED_FM = ['id', 'type', 'title', 'created']
+PREFIXES = {'knowledge': {'k','moc'},'project': {'p'},'workflow': {'w'},'skill': {'s'},'memory': {'m'},'meta': {'doc','moc'},'moc': {'moc'}}
+ID_RE = re.compile(r'([a-z]+)-([0-9]{4})-([0-9]+)$')
+SECRETS = (r'sk-[A-Za-z0-9]{16,}',r'AIza[0-9A-Za-z_-]{20,}',r'ghp_[A-Za-z0-9]{20,}',r'github_pat_[A-Za-z0-9_]{20,}',r'xox[baprs]-[A-Za-z0-9-]{10,}',r'-----BEGIN [A-Z ]*PRIVATE KEY-----')
 
 def parse_frontmatter(text):
-    """Sehr einfacher YAML-Frontmatter-Parser (nur top-level key: value)."""
-    if not text.startswith("---"):
-        return None
-    end = text.find("\n---", 3)
-    if end == -1:
-        return None
-    block = text[3:end].strip().splitlines()
-    fm = {}
-    for line in block:
-        if ":" in line and not line.strip().startswith("#"):
-            k, _, v = line.partition(":")
-            fm[k.strip()] = v.strip()
-    return fm
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != '---': return None
+    end = next((i for i,line in enumerate(lines[1:],1) if line.strip() == '---'), None)
+    if end is None: return None
+    data = {}
+    for line in lines[1:end]:
+        if ':' in line and not line.lstrip().startswith('#'):
+            key,value = line.split(':',1); data[key.strip()] = value.strip().strip('\"')
+    return data
 
+def valid_id(identifier, kind):
+    match = ID_RE.fullmatch(identifier)
+    if match: return match.group(1) in PREFIXES.get(kind,set())
+    match = re.fullmatch(r'(doc|moc)-[a-z0-9-]+',identifier)
+    return bool(match and match.group(1) in PREFIXES.get(kind,set()))
 
-def validate(vault: Path):
-    errors, warnings = [], []
-
-    # §3 Pflichtordner
-    for d in REQUIRED_DIRS:
-        if not (vault / d).is_dir():
-            errors.append(f"Pflichtordner fehlt: {d}/")
-    for d in RECOMMENDED_DIRS:
-        if not (vault / d).is_dir():
-            warnings.append(f"Empfohlener Ordner fehlt: {d}/")
-
-    # §3 00_meta Pflichtdateien
-    for f in REQUIRED_META:
-        if not (vault / "00_meta" / f).is_file():
-            errors.append(f"00_meta/{f} fehlt")
-
-    # Primärdateien prüfen
-    checked = 0
-    for md in vault.rglob("*.md"):
-        if ".obsidian" in md.parts or "90_archive" in md.parts:
-            continue
-        checked += 1
-        text = md.read_text(encoding="utf-8", errors="ignore")
-        rel = md.relative_to(vault)
-
-        # §5 Frontmatter
-        fm = parse_frontmatter(text)
-        if fm is None:
-            errors.append(f"Kein Frontmatter: {rel}")
-            continue
-        for field in REQUIRED_FM:
-            if field not in fm:
-                errors.append(f"Pflichtfeld '{field}' fehlt: {rel}")
-        # §5 type
-        if fm.get("type") not in VALID_TYPES:
-            errors.append(f"Ungültiger type '{fm.get('type')}': {rel}")
-        # §6 id
-        if "id" in fm and not ID_PATTERN.match(fm["id"]):
-            warnings.append(f"id entspricht nicht dem Schema: {fm['id']} ({rel})")
-
-    # §2/§10 Secrets
-    for f in vault.rglob("*"):
-        if f.is_file() and f.suffix in (".md", ".txt", ".json", ".yaml", ".yml"):
-            if ".obsidian" in f.parts:
-                continue
-            try:
-                content = f.read_text(encoding="utf-8", errors="ignore")
-            except Exception:
-                continue
-            for pat in SECRET_PATTERNS:
-                if pat.search(content):
-                    errors.append(f"Möglicher Secret-Fund: {f.relative_to(vault)}")
-                    break
-
-    # Level 2 (weich)
-    if not (vault / ".git").exists():
-        warnings.append("Kein Git-Repository (Level 2 empfiehlt Git).")
-
-    return errors, warnings, checked
-
+def validate(vault):
+    errors,warnings,seen,checked,mocs = [],[],{},0,0
+    for directory in REQUIRED_DIRS:
+        if not (vault/directory).is_dir(): errors.append('Pflichtordner fehlt: '+directory+'/')
+    for directory in RECOMMENDED_DIRS:
+        if not (vault/directory).is_dir(): warnings.append('Empfohlener Ordner fehlt: '+directory+'/')
+    for filename in REQUIRED_META:
+        if not (vault/'00_meta'/filename).is_file(): errors.append('00_meta/'+filename+' fehlt')
+    for path in sorted(vault.rglob('*.md')):
+        if '.obsidian' in path.parts or '90_archive' in path.parts: continue
+        checked += 1; relative = path.relative_to(vault)
+        try: text = path.read_text(encoding='utf-8')
+        except UnicodeDecodeError: errors.append('Nicht-UTF-8: '+str(relative)); continue
+        data = parse_frontmatter(text)
+        if data is None: errors.append('Kein gültiges Frontmatter: '+str(relative)); continue
+        missing = [field for field in REQUIRED_FM if not data.get(field)]
+        if missing: errors.extend([field+' fehlt: '+str(relative) for field in missing]); continue
+        identifier,kind = data['id'],data['type']
+        if identifier in seen: errors.append('Doppelte id: '+identifier)
+        seen[identifier] = relative
+        if kind not in PREFIXES or not valid_id(identifier,kind): errors.append('ID passt nicht zu type: '+identifier+' / '+kind)
+        try: dt.date.fromisoformat(data['created'])
+        except ValueError: errors.append('created ist kein ISO-Datum: '+str(relative))
+        if kind == 'project' and data.get('status') not in {'active','paused','done'}: errors.append('Ungültiger project-Status: '+str(relative))
+        if kind == 'memory' and data.get('scope') not in {'global','project','user','session'}: errors.append('Ungültiger memory-Scope: '+str(relative))
+        if kind == 'moc' or identifier.startswith('moc-'): mocs += 1
+        if any(re.search(pattern,text) for pattern in SECRETS): errors.append('Möglicher Secret-Fund: '+str(relative))
+    if not (vault/'.git').exists(): warnings.append('Kein Git-Repository; Level 2 empfiehlt Git.')
+    if not mocs: warnings.append('Kein MOC gefunden; Level 2 empfiehlt mindestens einen MOC.')
+    return errors,warnings,checked
 
 def main():
-    if len(sys.argv) != 2:
-        print("Nutzung: python validate_paios.py <pfad-zum-vault>")
-        sys.exit(2)
+    if len(sys.argv) != 2: print('Nutzung: python validate_paios.py <vault>'); return 2
     vault = Path(sys.argv[1])
-    if not vault.is_dir():
-        print(f"Pfad ist kein Verzeichnis: {vault}")
-        sys.exit(2)
-
-    errors, warnings, checked = validate(vault)
-
-    print(f"\nPAIOS-Validierung: {vault}")
-    print(f"Geprüfte Primärdateien: {checked}")
-    print("-" * 50)
-    for w in warnings:
-        print(f"  [WARN] {w}")
-    for e in errors:
-        print(f"  [FEHLER] {e}")
-    print("-" * 50)
-
-    if errors:
-        print(f"Ergebnis: NICHT konform (Level 1) — {len(errors)} Fehler, {len(warnings)} Warnungen")
-        sys.exit(1)
-    elif warnings:
-        print(f"Ergebnis: Level 1 KONFORM (mit {len(warnings)} Warnungen für Level 2)")
-        sys.exit(0)
-    else:
-        print("Ergebnis: Level 2 KONFORM — vollständig.")
-        sys.exit(0)
-
-
-if __name__ == "__main__":
-    main()
+    if not vault.is_dir(): print('Pfad ist kein Verzeichnis: '+str(vault)); return 2
+    errors,warnings,checked = validate(vault)
+    print('PAIOS-Validierung: '+str(vault)); print('Geprüfte Dateien: '+str(checked))
+    for item in warnings: print('[WARN] '+item)
+    for item in errors: print('[FEHLER] '+item)
+    print('Ergebnis: '+('NICHT konform' if errors else 'Level 1 KONFORM'))
+    return 1 if errors else 0
+if __name__ == '__main__': raise SystemExit(main())
