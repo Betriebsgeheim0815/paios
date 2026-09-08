@@ -1,0 +1,20 @@
+name: PAIOS Behavior Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validator regressions
+        run: python tests/test_validate_paios.py -v
+      - name: CLI smoke tests
+        run: python tests/test_tools.py -v
+      - name: Read-only adapter behavior
+        run: python tests/test_readonly_reference.py -v
