@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "paios-vault": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "<PATH_TO_PAIOS_VAULT>"]
+    }
+  }
+}
