@@ -2,14 +2,14 @@
 id: doc-standard
 type: meta
 title: "PAIOS Standard"
-version: 0.1
+version: 0.2
 status: draft
 created: 2026-07-13
 owner: "Dr. Dhoni"
 links: [doc-manifest, PAIOS_Datenmodell]
 ---
 
-# PAIOS Standard v0.1 (Spezifikation)
+# PAIOS Standard v0.2 (Spezifikation)
 
 Dieser Standard spezifiziert verbindlich, wie ein PAIOS-konformer Wissensspeicher (ein „PAIOS-Vault") aufgebaut ist. Er übersetzt das Manifest in prüfbare Regeln.
 
@@ -112,11 +112,11 @@ Ein Vault ist **PAIOS-konform (Level 1)**, wenn:
 
 ## 11. Versionierung des Standards
 
-Dieser Standard ist ein lebendes Dokument (SemVer). Breaking Changes erhöhen die Major-Version. Aktuelle Version: **0.1 (Draft)**.
+Dieser Standard ist ein lebendes Dokument (SemVer). Breaking Changes erhöhen die Major-Version. Aktuelle Version: **0.2**.
 
 ---
 
-## Offene Punkte (v0.2)
+## Offene Punkte (v0.3)
 - Validierungs-Skript (prüft Konformität automatisch).
 - Verbindliches Vokabular für `tags`.
 - Konfliktregeln bei gleichzeitigen Schreibzugriffen mehrerer Modelle.

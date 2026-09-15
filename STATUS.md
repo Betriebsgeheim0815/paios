@@ -13,9 +13,9 @@ Bei jedem Push validiert GitHub Actions den Referenz-Vault und führt die Unitte
 
 ## Bekannte Grenzen und nächste Prioritäten
 
-1. Versionsangaben in `STANDARD.md`, Datenmodell, Vault-Manifest und Validator zu einer normativen v0.2 synchronisieren.
-2. Kompakte Werkzeug-Wrapper in ein wartbares, gemeinsam genutztes Python-Paket überführen.
-3. Einen echten MCP-Transportserver mit Protokolltests auf den Read-only-Kern setzen.
-4. Schreibzugriffe erst nach einer expliziten Berechtigungs-, Validierungs-, Versions- und Audit-Spezifikation ergänzen.
+1. Kompakte Werkzeug-Wrapper in ein wartbares, gemeinsam genutztes Python-Paket überführen.
+2. Einen echten MCP-Transportserver mit Protokolltests auf den Read-only-Kern setzen.
+3. Schreibzugriffe erst nach einer expliziten Berechtigungs-, Validierungs-, Versions- und Audit-Spezifikation ergänzen.
+4. Branch-Schutz und verpflichtende CI-Prüfungen für `main` aktivieren.
 
 Öffentliche Dateien enthalten keine lokalen Maschinenpfade oder privaten Backup-Angaben.

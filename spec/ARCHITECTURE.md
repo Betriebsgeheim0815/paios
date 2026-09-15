@@ -2,14 +2,14 @@
 id: doc-architecture
 type: meta
 title: "PAIOS Architekturhandbuch"
-version: 0.1
+version: 0.2
 status: draft
 created: 2026-07-13
 owner: "Dr. Dhoni"
 links: [doc-manifest, doc-standard, PAIOS_Datenmodell]
 ---
 
-# PAIOS Architekturhandbuch v0.1
+# PAIOS Architekturhandbuch v0.2
 
 Beschreibt, wie die PAIOS-Komponenten technisch zusammenwirken. Das Manifest sagt *warum*, der Standard sagt *was*, dieses Handbuch sagt *wie*.
 
@@ -121,4 +121,4 @@ Zwei Server-Rollen (bestehende Bausteine, kein Eigenbau):
 2. **Validierungsskript** – prüft Konformität (Standard §10).
 3. **MCP-Setup-Anleitung** – Vault- und Memory-Server konkret verbinden.
 
-*Version 0.1 (Draft) – lebendes Dokument.*
+*Version 0.2 – lebendes Dokument.*

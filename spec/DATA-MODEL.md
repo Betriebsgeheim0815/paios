@@ -1,4 +1,4 @@
-# PAIOS – Datenmodell (v0.1)
+# PAIOS – Datenmodell (v0.2)
 
 **Stand:** 2026-07-13
 **Grundlage:** Option A (MCP-nativ), Obsidian als Wissensspeicher, minimale Referenzimplementierung.
