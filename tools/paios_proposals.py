@@ -29,7 +29,7 @@ def validate_proposal(proposal):
   if not isinstance(proposal.get("created_at"), str):
     errors.append("created_at must be an ISO datetime string")
   else:
-    try: dt.datetime.fromisoformat(proposal["created_at"])
+    try: dt.datetime.fromisoformat(proposal["created_at"].replace("Z", "+00:00"))
     except ValueError: errors.append("created_at must be an ISO datetime string")
   if proposal.get("status") not in STATUSES:
     errors.append("unsupported status")
