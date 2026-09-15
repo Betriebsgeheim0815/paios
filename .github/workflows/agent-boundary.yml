@@ -1,0 +1,22 @@
+name: PAIOS Agent Boundary
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+jobs:
+  protected-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reject protected data changes
+        shell: bash
+        run: |
+          files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          if printf '%s\n' "$files" | grep -Eq '^(reference-vault/|\.hermes/|\.env$|.*\.(pem|key)$)'; then
+            echo "Protected paths changed."
+            exit 1
+          fi
+          echo "Protected business data and credentials unchanged."
