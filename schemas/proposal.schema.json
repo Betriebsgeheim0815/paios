@@ -1,1 +1,87 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://paios.example/schema/proposal-0.3.json","title":"PAIOS Contribution Proposal","type":"object","additionalProperties":false,"required":["proposal_id","entity_id","operation","actor","base_revision","created_at","status","patch","provenance"],"properties":{"proposal_id":{"type":"string","pattern":"^prop-[A-Za-z0-9._-]{1,80}$"},"entity_id":{"type":"string","minLength":1},"operation":{"enum":["create","update","archive"]},"actor":{"type":"string","minLength":1},"base_revision":{"type":"integer","minimum":0},"created_at":{"type":"string","format":"date-time"},"status":{"const":"pending"},"patch":{"type":"object"},"sources":{"type":"array","items":{"type":"string"}},"reason":{"type":"string"},"provenance":{"type":"object","additionalProperties":false,"required":["actor","tool","recorded_at"],"properties":{"actor":{"type":"string","minLength":1},"tool":{"type":"string","minLength":1},"recorded_at":{"type":"string","format":"date-time"}}}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paios.example/schema/proposal-1.0.json",
+  "title": "PAIOS Contribution Proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposal_id", "entity_id", "operation", "actor", "base_revision",
+    "created_at", "status", "patch", "provenance", "sources", "reason"
+  ],
+  "properties": {
+    "proposal_id": {"type": "string", "pattern": "^prop-[A-Za-z0-9._-]{1,80}$"},
+    "entity_id": {"type": "string", "minLength": 1},
+    "operation": {"enum": ["create", "update", "archive"]},
+    "actor": {"type": "string", "minLength": 1},
+    "base_revision": {"type": "string", "pattern": "^(absent|sha256:[0-9a-f]{64})$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["pending", "approved", "rejected", "applied"]},
+    "patch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {"type": "object"},
+        "body": {"type": "string"}
+      }
+    },
+    "sources": {"type": "array", "items": {"type": "string"}},
+    "reason": {"type": "string"},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor", "tool", "recorded_at"],
+      "properties": {
+        "actor": {"type": "string", "minLength": 1},
+        "tool": {"type": "string", "minLength": 1},
+        "recorded_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer", "reviewed_at", "reason"],
+      "properties": {
+        "reviewer": {"type": "string", "pattern": "^human:[^\\s:]+$"},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "reason": {"type": "string"},
+        "proposal_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "application": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor", "applied_at", "result_revision", "target"],
+      "properties": {
+        "actor": {"type": "string", "pattern": "^human:[^\\s:]+$"},
+        "applied_at": {"type": "string", "format": "date-time"},
+        "result_revision": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "target": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "pending"}}},
+      "then": {"not": {"anyOf": [{"required": ["review"]}, {"required": ["application"]}]}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "approved"}}},
+      "then": {
+        "required": ["review"],
+        "properties": {"review": {"required": ["proposal_digest"]}},
+        "not": {"required": ["application"]}
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "rejected"}}},
+      "then": {"required": ["review"], "not": {"required": ["application"]}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "applied"}}},
+      "then": {
+        "required": ["review", "application"],
+        "properties": {"review": {"required": ["proposal_digest"]}}
+      }
+    }
+  ]
+}
