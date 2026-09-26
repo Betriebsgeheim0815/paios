@@ -6,6 +6,7 @@
 - Referenz-Vault, Validator, Migration, Importer und GitHub-Actions-CI.
 - Referenz-CLI mit `init`, `new`, `validate`, `search` und Kontext-Export.
 - Lokaler Read-only-Adapter mit exakter Frontmatter-ID-Suche, JSON-Suche, Duplikaterkennung und Schutz vor Symlink-Ausbrüchen.
+- Gemeinsamer Verarbeitungskern und kontrollierter Proposal-Ablauf mit Review, Revisionstest und Audit.
 
 ## Verifiziert
 
@@ -13,9 +14,8 @@ Bei jedem Push validiert GitHub Actions den Referenz-Vault und führt die Unitte
 
 ## Bekannte Grenzen und nächste Prioritäten
 
-1. Kompakte Werkzeug-Wrapper in ein wartbares, gemeinsam genutztes Python-Paket überführen.
-2. Einen echten MCP-Transportserver mit Protokolltests auf den Read-only-Kern setzen.
-3. Schreibzugriffe erst nach einer expliziten Berechtigungs-, Validierungs-, Versions- und Audit-Spezifikation ergänzen.
-4. Branch-Schutz und verpflichtende CI-Prüfungen für `main` aktivieren.
+1. Einen echten MCP-Transportserver mit Protokolltests auf den Read-only-Kern setzen.
+2. Level 3 mit Datenschutzfeldern, Exportfiltern und Backlink-Prüfung spezifizieren.
+3. Branch-Schutz und verpflichtende CI-Prüfungen für `main` verifizieren.
 
 Öffentliche Dateien enthalten keine lokalen Maschinenpfade oder privaten Backup-Angaben.

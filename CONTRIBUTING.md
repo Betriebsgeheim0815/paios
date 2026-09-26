@@ -11,5 +11,7 @@ PAIOS ist ein offener Standard. Beiträge sind willkommen.
 ## Vor dem PR
 ```bash
 python tools/validate_paios.py reference-vault
+python -B -m unittest discover -s tests -v
+python -m compileall -q tools mcp tests
 ```
-Nur konforme Beiträge werden gemergt.
+Nur konforme Beiträge mit erfolgreichen Tests werden gemergt.
