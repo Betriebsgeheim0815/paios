@@ -1,1 +1,56 @@
-exec("import argparse,json,sys\nfrom pathlib import Path\n\ndef fm(text):\n lines=text.splitlines()\n if not lines or lines[0].strip()!='---': return {}\n data={}\n for line in lines[1:]:\n  if line.strip()=='---': return data\n  if ':' in line:\n   key,value=line.split(':',1); data[key.strip()]=value.strip().strip(chr(34)+chr(39))\n return {}\n\ndef entries(vault):\n root=Path(vault).expanduser().resolve(strict=True)\n if not root.is_dir(): raise NotADirectoryError(root)\n for path in sorted(root.rglob('*.md')):\n  try: resolved=path.resolve(strict=True)\n  except OSError: continue\n  if not resolved.is_file() or not resolved.is_relative_to(root): continue\n  text=resolved.read_text(encoding='utf-8')\n  yield path.relative_to(root),text,fm(text)\n\ndef search(vault,query):\n needle=query.casefold(); out=[]\n for relative,text,metadata in entries(vault):\n  if needle in text.casefold(): out.append({'path':relative.as_posix(),'id':metadata.get('id'),'title':metadata.get('title'),'snippet':' '.join(text.split())[:240]})\n print(json.dumps(out,ensure_ascii=False,indent=2)); return 0\n\ndef read_entry(vault,identifier):\n matches=[(relative,text) for relative,text,metadata in entries(vault) if metadata.get('id')==identifier]\n if not matches:\n  print('Not found',file=sys.stderr); return 1\n if len(matches)>1:\n  print('Ambiguous ID: '+identifier,file=sys.stderr); return 2\n print(matches[0][1]); return 0\n\ndef main(argv=None):\n parser=argparse.ArgumentParser(description='Read-only PAIOS vault adapter'); parser.add_argument('vault')\n commands=parser.add_subparsers(dest='command',required=True)\n find=commands.add_parser('search'); find.add_argument('query')\n read=commands.add_parser('read'); read.add_argument('id')\n args=parser.parse_args(argv)\n try: return search(args.vault,args.query) if args.command=='search' else read_entry(args.vault,args.id)\n except (FileNotFoundError,NotADirectoryError,UnicodeError) as error:\n  print('Adapter error: '+str(error),file=sys.stderr); return 2\n\nif __name__=='__main__': raise SystemExit(main())")
+#!/usr/bin/env python3
+"""Read-only PAIOS vault adapter."""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from paios_core import PaiosError, find_entry, iter_entries  # noqa: E402
+
+
+def search(vault, query: str) -> int:
+    needle = query.casefold()
+    output = []
+    for entry in iter_entries(vault, strict=False):
+        if needle in entry.text.casefold():
+            output.append(
+                {
+                    "path": entry.relative.as_posix(),
+                    "id": entry.metadata.get("id"),
+                    "title": entry.metadata.get("title"),
+                    "snippet": " ".join(entry.body.split())[:240],
+                }
+            )
+    print(json.dumps(output, ensure_ascii=False, indent=2))
+    return 0
+
+
+def read_entry(vault, identifier: str) -> int:
+    entry = find_entry(vault, identifier, strict=False)
+    if entry is None:
+        print("Not found", file=sys.stderr)
+        return 1
+    print(entry.text, end="" if entry.text.endswith("\n") else "\n")
+    return 0
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("vault")
+    commands = parser.add_subparsers(dest="command", required=True)
+    find = commands.add_parser("search")
+    find.add_argument("query")
+    read = commands.add_parser("read")
+    read.add_argument("id")
+    args = parser.parse_args(argv)
+    try:
+        return search(args.vault, args.query) if args.command == "search" else read_entry(args.vault, args.id)
+    except (PaiosError, OSError, UnicodeError) as error:
+        print(f"Adapter error: {error}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
