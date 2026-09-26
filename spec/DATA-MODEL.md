@@ -1,4 +1,4 @@
-# PAIOS – Datenmodell (v0.2)
+# PAIOS – Datenmodell (v1.0)
 
 **Stand:** 2026-07-13
 **Grundlage:** Option A (MCP-nativ), Obsidian als Wissensspeicher, minimale Referenzimplementierung.
@@ -55,10 +55,10 @@ Fließtext des Wissens …
 ### 3.2 Project (Projekt) — `20_projects/`
 ```yaml
 ---
-id: p-paios
+id: p-2026-0001
 type: project
 title: "PAIOS Aufbau"
-status: active            # active | paused | done
+status: active
 owner: "Dr. Dhoni"
 created: 2026-07-13
 next_task: "Referenzimplementierung"
@@ -70,9 +70,10 @@ Projektbeschreibung, Ziele, offene Punkte …
 ### 3.3 Workflow — `30_workflows/`
 ```yaml
 ---
-id: w-doku
+id: w-2026-0001
 type: workflow
 title: "Projektdokumentation erstellen"
+created: 2026-07-13
 steps: [manifest, standard, architektur, github, referenz]
 model_hint: "reasoning"   # welche Modellklasse eignet sich
 ---
@@ -82,9 +83,10 @@ Beschreibung + Schritt-für-Schritt …
 ### 3.4 Skill — `40_skills/`
 ```yaml
 ---
-id: s-continue-paios
+id: s-2026-0001
 type: skill
 title: "PAIOS fortführen"
+created: 2026-07-13
 trigger: "weiter am PAIOS-Projekt"
 inputs: [vault_path]
 outputs: [next_document]
@@ -97,10 +99,11 @@ Anweisung, was der Skill tut …
 ---
 id: m-2026-0007
 type: memory
-scope: project            # global | project | session
-project: p-paios
-relevance: 0.9
+title: "PAIOS-Erinnerung"
 created: 2026-07-13
+scope: project
+project: p-2026-0001
+relevance: 0.9
 ---
 Kurzer, atomarer Erinnerungssatz (von MCP-Memory-Server gepflegt) …
 ```
@@ -114,7 +117,8 @@ Kurzer, atomarer Erinnerungssatz (von MCP-Memory-Server gepflegt) …
 | `id` | ja | Eindeutig, präfixiert (`k-`, `p-`, `w-`, `s-`, `m-`) |
 | `type` | ja | Entitätstyp (knowledge/project/workflow/skill/memory) |
 | `title` | ja | Menschlicher Titel |
-| `created` / `updated` | ja | ISO-Datum |
+| `created` | ja | ISO-Datum |
+| `updated` | nein | ISO-Datum der letzten Änderung |
 | `tags` | nein | Freie Schlagworte |
 | `links` | nein | IDs verwandter Einträge; zusätzlich Obsidian-`[[Wikilinks]]` im Text |
 
@@ -126,10 +130,12 @@ Kurzer, atomarer Erinnerungssatz (von MCP-Memory-Server gepflegt) …
 
 1. Modell fragt via MCP: „Was weiß ich über MCP im PAIOS-Kontext?"
 2. MCP-Server liest `10_knowledge/` + `50_memory/`, filtert nach `tags`/`relevance`.
-3. Antwort fließt ins Modell; neue Erkenntnisse werden als `memory`-Datei zurückgeschrieben.
-4. Git committet die Änderung → Versionierung, Nachvollziehbarkeit, kein Lock-in.
+3. Antwort fließt ins Modell; neue Erkenntnisse werden als `pending` Proposal vorgeschlagen.
+4. Ein Mensch prüft und genehmigt das Proposal.
+5. Das Proposal-Werkzeug prüft die Basisrevision, schreibt atomar und protokolliert das Ergebnis.
+6. Git committet die Änderung → Versionierung, Nachvollziehbarkeit, kein Lock-in.
 
-Benötigte MCP-Server (bestehend, nicht neu bauen): **Filesystem/Obsidian-MCP** (Lesen/Schreiben des Vaults) + **Memory-MCP** (Relevanz-Ranking, z. B. ai-memory-mcp-Ansatz).
+Benötigte MCP-Rollen: **Filesystem/Obsidian-MCP** mit read-only Vault-Zugriff und Proposal-Einreichung sowie **Memory-MCP** für Relevanz-Ranking. Modelle schreiben keine kanonischen Vault-Dateien direkt.
 
 ---
 

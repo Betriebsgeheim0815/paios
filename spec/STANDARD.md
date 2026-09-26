@@ -2,14 +2,14 @@
 id: doc-standard
 type: meta
 title: "PAIOS Standard"
-version: 0.2
+version: 1.0
 status: draft
 created: 2026-07-13
 owner: "Dr. Dhoni"
 links: [doc-manifest, PAIOS_Datenmodell]
 ---
 
-# PAIOS Standard v0.2 (Spezifikation)
+# PAIOS Standard v1.0 (Spezifikation)
 
 Dieser Standard spezifiziert verbindlich, wie ein PAIOS-konformer Wissensspeicher (ein „PAIOS-Vault") aufgebaut ist. Er übersetzt das Manifest in prüfbare Regeln.
 
@@ -52,6 +52,8 @@ Ein Vault MUSS folgende Top-Level-Kategorien führen (Nummernpräfix ist verbind
 - Jede Primärdatei MUSS aus **YAML-Frontmatter** (`---`) + **Markdown-Körper** bestehen.
 - Encoding MUSS UTF-8 sein.
 - Dateinamen SOLLTEN klein, ohne Sonderzeichen, mit `-` getrennt sein und die `id` widerspiegeln.
+- Das v1.0-Referenzprofil unterstützt flache Schlüssel/Werte und Listen in eckigen Klammern;
+  verschachtelte YAML-Strukturen gehören nicht zum Referenzprofil.
 
 ## 5. Metadaten (Frontmatter)
 
@@ -85,7 +87,7 @@ Ein Vault MUSS folgende Top-Level-Kategorien führen (Nummernpräfix ist verbind
 Verbindliche Minimalfelder je Typ (zusätzlich zu §5.1):
 
 - **knowledge:** `source` SOLLTE. Körper = Wissensinhalt.
-- **project:** `status` MUSS ∈ {active, paused, done}; `next_task` SOLLTE.
+- **project:** `status` MUSS ∈ {active, paused, done, archived}; `next_task` SOLLTE.
 - **workflow:** `steps` (Liste) SOLLTE.
 - **skill:** `trigger` MUSS; `inputs`/`outputs` SOLLTEN.
 - **memory:** `scope` MUSS ∈ {global, project, session}; bei `project` MUSS `project`-ID gesetzt sein; `relevance` (0–1) KANN.
@@ -108,15 +110,20 @@ Ein Vault ist **PAIOS-konform (Level 1)**, wenn:
 4. IDs dem Schema (§6) folgen,
 5. keine Secrets im Vault liegen.
 
-**Level 2** ergänzt: MOC-Seiten je Kategorie, Git-Versionierung, MCP-Anbindung.
+**Level 2** ergänzt: MOC-Seiten je Kategorie, Git-Versionierung und eine bewusst dokumentierte
+Read-only-MCP-Anbindung in `00_meta/mcp.json` (`enabled: true`, `mode: read-only`).
+
+Modellseitige Schreibvorschläge MÜSSEN als Proposal mit Ausgangsrevision erfasst werden. Eine
+menschliche Freigabe MUSS an den geprüften Proposal-Inhalt gebunden sein. Vor der Anwendung MUSS
+die Ausgangsrevision erneut geprüft und das Ergebnis protokolliert werden.
 
 ## 11. Versionierung des Standards
 
-Dieser Standard ist ein lebendes Dokument (SemVer). Breaking Changes erhöhen die Major-Version. Aktuelle Version: **0.2**.
+Dieser Standard ist ein lebendes Dokument (SemVer). Breaking Changes erhöhen die Major-Version. Aktuelle Version: **1.0**.
 
 ---
 
-## Offene Punkte (v0.3)
-- Validierungs-Skript (prüft Konformität automatisch).
+## Offene Punkte (v0.4)
 - Verbindliches Vokabular für `tags`.
 - Konfliktregeln bei gleichzeitigen Schreibzugriffen mehrerer Modelle.
+- Vollständiger MCP-Transportserver auf dem geprüften Read-only-Kern.

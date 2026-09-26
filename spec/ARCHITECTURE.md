@@ -2,14 +2,14 @@
 id: doc-architecture
 type: meta
 title: "PAIOS Architekturhandbuch"
-version: 0.2
+version: 1.0
 status: draft
 created: 2026-07-13
 owner: "Dr. Dhoni"
 links: [doc-manifest, doc-standard, PAIOS_Datenmodell]
 ---
 
-# PAIOS Architekturhandbuch v0.2
+# PAIOS Architekturhandbuch v1.0
 
 Beschreibt, wie die PAIOS-Komponenten technisch zusammenwirken. Das Manifest sagt *warum*, der Standard sagt *was*, dieses Handbuch sagt *wie*.
 
@@ -49,11 +49,12 @@ Zwei Server-Rollen (bestehende Bausteine, kein Eigenbau):
 
 | Server | Aufgabe | Referenz |
 |---|---|---|
-| **Vault-Server** | Lesen/Schreiben von Dateien, Suche, Frontmatter-Parsing | Filesystem-/Obsidian-MCP |
-| **Memory-Server** | Relevanz-Ranking, Recall, Zurückschreiben nach `50_memory/` | ai-memory-mcp-Ansatz |
+| **Vault-Server** | Lesen, Suche, Frontmatter-Parsing und Einreichen von Proposals | Filesystem-/Obsidian-MCP |
+| **Memory-Server** | Relevanz-Ranking, Recall und Vorschläge für `50_memory/` | ai-memory-mcp-Ansatz |
 
 - Beide MÜSSEN nur über offene MCP-Endpunkte ansprechbar sein.
-- Schreibzugriffe SOLLTEN einen Git-Commit auslösen.
+- Modelle erhalten nur Lesezugriff und dürfen Änderungen ausschließlich als `pending` Proposal einreichen.
+- Erst ein menschlich freigegebenes Proposal darf atomar angewendet und anschließend per Git-Commit versioniert werden.
 
 ## 4. Schicht 3 – Modell (austauschbar)
 
@@ -78,8 +79,9 @@ Zwei Server-Rollen (bestehende Bausteine, kein Eigenbau):
 
 ### 6.2 Erkenntnis speichern
 1. Modell erzeugt neue Erkenntnis.
-2. Memory-Server schreibt `m-…`-Datei nach `50_memory/` (Scope, Relevanz).
-3. Vault-Server committet → Git-Historie.
+2. Memory-Server erzeugt ein `pending` Proposal für eine `m-…`-Datei (Scope, Relevanz).
+3. Ein Mensch prüft und genehmigt den Vorschlag.
+4. Das Proposal-Werkzeug wendet die Änderung revisionsgebunden an; danach folgt der Git-Commit.
 
 ### 6.3 Modellwechsel
 1. Nutzer wechselt das Modell (Router-Konfiguration).
@@ -101,7 +103,7 @@ Zwei Server-Rollen (bestehende Bausteine, kein Eigenbau):
 ## 8. Nicht-funktionale Anforderungen
 
 - **Portabilität:** Vault MUSS ohne PAIOS-Software lesbar bleiben (reine Dateien).
-- **Nachvollziehbarkeit:** jede KI-Änderung MUSS als Git-Commit sichtbar sein.
+- **Nachvollziehbarkeit:** jede KI-Änderung MUSS als Proposal, Audit-Ereignis und Git-Commit sichtbar sein.
 - **Sicherheit:** Secrets außerhalb des Vaults; Vault nicht ungeschützt in Cloud-Sync mit Klartext-Geheimnissen.
 - **Modularität:** Komponenten einzeln austauschbar (Modell, Memory-Server, Speicher-App).
 
@@ -110,7 +112,7 @@ Zwei Server-Rollen (bestehende Bausteine, kein Eigenbau):
 | Risiko | Gegenmaßnahme |
 |---|---|
 | MCP-Server nicht verfügbar | Vault bleibt als Dateien nutzbar (Degradation, kein Ausfall) |
-| Gleichzeitige Schreibzugriffe | Git-Merge + Konfliktregeln (Standard v0.2) |
+| Gleichzeitige Schreibzugriffe | Proposal-Revisionstest + Git-Merge |
 | Wildwuchs/Inkonsistenz | Konformitäts-Validierungsskript (geplant) |
 | Cloud-Sync-Leck | Secrets-Regel + `.gitignore` + Passwort-Manager |
 
@@ -121,4 +123,4 @@ Zwei Server-Rollen (bestehende Bausteine, kein Eigenbau):
 2. **Validierungsskript** – prüft Konformität (Standard §10).
 3. **MCP-Setup-Anleitung** – Vault- und Memory-Server konkret verbinden.
 
-*Version 0.2 – lebendes Dokument.*
+*Version 1.0 – lebendes Dokument.*
