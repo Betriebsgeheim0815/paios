@@ -15,7 +15,7 @@ jobs:
         shell: bash
         run: |
           files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          if printf '%s\n' "$files" | grep -Eq '^(reference-vault/|\.hermes/|\.env$|.*\.(pem|key)$)'; then
+          if printf '%s\n' "$files" | grep -Eq '^(private-vault/|\.hermes/|\.env($|\.)|.*\.(pem|key)$)'; then
             echo "Protected paths changed."
             exit 1
           fi
